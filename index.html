@@ -33,7 +33,6 @@
 <div class="top">
   <button id="upBtn" class="btn">⬆️ Subir un nivel</button>
   <input id="q" type="search" placeholder="Buscar por nombre…"/>
-  <span class="muted hide-sm">Consejo: usa el cuadro de búsqueda para filtrar.</span>
 </div>
 
 <div id="alert"></div>
@@ -52,15 +51,11 @@
 <div id="empty" class="empty" style="display:none">No hay elementos para mostrar.</div>
 
 <script>
-/* ========= CONFIG ========= */
 const OWNER  = "cvalle2024";
 const REPO   = "Documentos-Normativos-SESAL-HND";
-/* Si tu rama no es main, el script intentará automáticamente con master si falla */
 let   BRANCH = "main";
-/* Si quieres arrancar en una subcarpeta por defecto, ponla aquí (ej: "Taller CBR y NAC") */
 const START_PATH = "";
 
-/* ====== Utilidades ====== */
 const tbody   = document.getElementById("tbody");
 const emptyEl = document.getElementById("empty");
 const alertEl = document.getElementById("alert");
@@ -108,11 +103,9 @@ function showError(msg){
 }
 function clearError(){ alertEl.innerHTML=""; }
 
-/* ====== API ====== */
 async function fetchContents(path){
   const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encPath(path)}?ref=${BRANCH}`;
   let res = await fetch(url);
-  // Si falla con main, intenta master una vez
   if(res.status===404 && BRANCH==="main"){
     BRANCH = "master";
     const url2 = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${encPath(path)}?ref=${BRANCH}`;
@@ -137,13 +130,11 @@ async function fetchContents(path){
   return res.json();
 }
 
-/* ====== Render ====== */
 function render(items, path){
   const needle = (qInput.value||"").toLowerCase().trim();
   let filtered = items;
   if(needle) filtered = items.filter(it => it.name.toLowerCase().includes(needle));
 
-  // Orden: carpetas primero
   filtered.sort((a,b)=>{
     if(a.type!==b.type) return a.type==="dir" ? -1 : 1;
     return a.name.localeCompare(b.name,"es");
@@ -204,17 +195,10 @@ function render(items, path){
       down.textContent = "Descargar";
       down.target = "_blank";
       act.appendChild(down);
-      const sep = document.createTextNode(" · ");
-      act.appendChild(sep);
-      const view = document.createElement("a");
-      view.href = `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${encPath((path ? path + "/" : "") + it.name)}`;
-      view.textContent = "Ver en GitHub";
-      view.target = "_blank";
-      act.appendChild(view);
     } else {
       const open = document.createElement("a");
       open.href = ghFolderUrl((path ? path + "/" : "") + it.name);
-      open.textContent = "Abrir en GitHub";
+      open.textContent = "Abrir";
       open.target = "_blank";
       act.appendChild(open);
     }
@@ -224,7 +208,6 @@ function render(items, path){
   }
 }
 
-/* ====== Controlador ====== */
 async function load(){
   clearError();
   const path = getParamPath();
@@ -254,7 +237,6 @@ document.getElementById("upBtn").onclick = ()=>{
 };
 qInput.addEventListener("input", load);
 
-// Inicio
 load();
 </script>
 </body>
