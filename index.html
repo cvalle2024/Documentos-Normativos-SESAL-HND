@@ -131,6 +131,7 @@ async function fetchContents(path){
 }
 
 function render(items, path){
+  items = items.filter(it => it.name.toLowerCase() !== "index.html");
   const needle = (qInput.value||"").toLowerCase().trim();
   let filtered = items;
   if(needle) filtered = items.filter(it => it.name.toLowerCase().includes(needle));
@@ -241,3 +242,4 @@ load();
 </script>
 </body>
 </html>
+
